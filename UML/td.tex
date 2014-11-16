@@ -1,0 +1,119 @@
+
+\documentclass[10pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{listings}
+\usepackage{xcolor}
+
+\definecolor{gris1}{gray}{0.40}
+\definecolor{gris2}{gray}{0.55}
+\definecolor{gris3}{gray}{0.65}
+\definecolor{gris4}{gray}{0.50}
+\definecolor{vert}{rgb}{0,0.4,0}
+\definecolor{violet}{rgb}{0.65, 0.2, 0.65}
+\definecolor{bleu1}{rgb}{0,0,0.8}
+\definecolor{bleu2}{rgb}{0,0.2,0.6}
+\definecolor{bleu3}{rgb}{0,0.2,0.2}
+\definecolor{rouge}{HTML}{F93928}
+
+\lstdefinelanguage{algo}{%
+   morekeywords={%
+    %%% couleur 1
+		importer, programme, glossaire, fonction, procedure, constante, type, 
+	%%% IMPORT & Co.
+		si, sinon, switch, alors, fin, tantque, debut, faire, lorsque, fin lorsque, 
+		declenche, declencher, enregistrement, tableau, retourne, retourner, =, pour, a,
+		/=, <, >, traite,exception, 
+	%%% types 
+		Entier, Reel, Booleen, Caractere, Réél, Booléen, Caractère,
+	%%% types 
+		entree, maj, sortie,entrée,
+	%%% types 
+		et, ou, non,
+		Debut, début, debut, fin, Fin, faux, vrai, Faux, Vrai
+	},
+  sensitive=true,
+  morecomment=[l]{--},
+  morestring=[b]',
+}
+
+\lstset{language=algo,
+    %%% BOUCLE, TEST & Co.
+      emph={importer, programme, glossaire, fonction, procedure, constante, type},
+      emphstyle=\color{bleu2},
+    %%% IMPORT & Co.  
+	emph={[2]
+		si, sinon, switch, alors, fin , tantque, debut, faire, lorsque, fin lorsque, 
+		declencher, retourner, et, ou, non,enregistrement, retourner, retourne, 
+		tableau, /=, <, =, >, traite,exception, pour, a
+	},
+      emphstyle=[2]\color{bleu1},
+    %%% FONCTIONS NUMERIQUES
+		emph={[3]Vrai, vrai, Faux, faux},
+      emphstyle=[3]\color{red},
+    %%% FONCTIONS NUMERIQUES
+      emph={[4]entree, maj, sortie, entrée},	
+      emphstyle=[4]\color{gris1},
+}
+
+\lstset{ % general style for listings 
+   numbers=left 
+   , literate={é}{{\'e}}1 {è}{{\`e}}1 {à}{{\`a}}1 {ê}{{\^e}}1 {É}{{\'E}}1 {ô}{{\^o}}1 {€}{{\euro}}1{°}{{$^{\circ}$}}1 {ç}{ {c}}1 {ù}{u}1
+	, extendedchars=\true
+   , tabsize=2 
+   , stepnumber=2
+   , frame=l
+   , framerule=1.1pt
+   , linewidth=510px
+   , breaklines=true 
+   , basicstyle=\footnotesize\ttfamily 
+   , numberstyle=\tiny\ttfamily 
+   , framexleftmargin=0mm 
+   , xleftmargin=0mm 
+   , captionpos=b 
+	, keywordstyle=\color{bleu2}
+	, commentstyle=\color{vert}
+	, stringstyle=\color{rouge}
+	, showstringspaces=false
+	, extendedchars=true
+	, mathescape=true
+	, prebreak=\raisebox{0ex}[0ex][0ex]
+		   {\ensuremath{\hookleftarrow}}
+	,breakatwhitespace=true
+} 
+%	\lstlistoflistings
+%	\addcontentsline{toc}{part}{List of code examples}
+
+\author{Charles Fallourd}
+\title{UML\\ TD}
+\date{}
+\begin{document}
+\maketitle
+
+\part*{TD 4}
+\section*{Exercice 1}
+
+mettre le diagramme machine.dia ici
+
+\section*{Exercice 2}
+Transition = événement[condition]/action
+Evenement = opération | appel de méthode | when cond
+
+exemple : aller de marié à Veuf : "when partenaire décèdé"
+l'utilisation de / action pour la transition sert pour stocker des variable par exemple.
+Si l'on voulait ajouter la condition : on ne peut pas se marier plus de deux fois, on se servirait
+de ça pour le gérer (en stockant le nombre de fois que l'on s'est marié).
+
+\subsection*{exo du prof}
+
+Un étudiant est successivement en cours et en inter cours.\\
+Quand il est en cours, il est attentif ou dans la lune. (il peut changer d'état durant le cours)\\
+Il revient en cours attentif(responsablement dans la lune) s'il a quitté le précedent attentif (resp dans la lune).\\
+Il alterne les TD et TP.\\
+Il démarre en intercours.\\
+
+\end{document}

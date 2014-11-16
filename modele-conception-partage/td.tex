@@ -1,0 +1,159 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{listings}
+\usepackage{color}
+
+\definecolor{gris1}{gray}{0.40}
+\definecolor{gris2}{gray}{0.55}
+\definecolor{gris3}{gray}{0.65}
+\definecolor{gris4}{gray}{0.50}
+\definecolor{vert}{rgb}{0,0.4,0}
+\definecolor{violet}{rgb}{0.65, 0.2, 0.65}
+\definecolor{bleu1}{rgb}{0,0,0.8}
+\definecolor{bleu2}{rgb}{0,0.2,0.6}
+\definecolor{bleu3}{rgb}{0,0.2,0.2}
+
+
+\lstset{ % general style for listings
+numbers=left
+, literate={é}{{\'e}}1 {è}{{\`e}}1 {à}{{\`a}}1 {ê}{{\^e}}1 {É}{{\'E}}1 {ô}{{\^o}}1 {€}{{\euro}}1{°}{{$^{\circ}$}}1 {ç}{ {c}}1 {ù}{u}1
+, extendedchars=\true
+, tabsize=2
+, stepnumber=2
+, frame=l
+, framerule=1.1pt
+, linewidth=510px
+, breaklines=true
+, basicstyle=\footnotesize\ttfamily
+, numberstyle=\tiny\ttfamily
+, framexleftmargin=0mm
+, xleftmargin=0mm
+, captionpos=b
+, keywordstyle=\color{bleu2}
+, commentstyle=\color{vert}
+, stringstyle=\color{rouge}
+, showstringspaces=false
+, extendedchars=true
+, mathescape=true
+, prebreak=\raisebox{0ex}[0ex][0ex]
+{\ensuremath{\hookleftarrow}}
+,breakatwhitespace=true
+}
+% \lstlistoflistings
+% \addcontentsline{toc}{part}{List of code examples}
+
+
+\title{Modele Conception Partagé\\TD}
+\date{}
+\author{kelto}
+
+\begin{document}
+\maketitle
+
+\part*{TD4}
+
+Utilisation des moniteurs de Hoare pour implémenter le modèle de Producteur-Consommateur.
+
+\section*{Variante 1}
+\begin{lstlisting}[language=C, caption=Corps moniteur Prod\_Cons]
+int Nplace_libre;
+Condition full;
+Condition empty;
+void Deposer(M:Message)
+{
+	if(Nplace_libre = 0)
+		wait(full);
+	inserer(M);
+	NPlace_libre--;
+	signal(empty);
+}
+void Retirer(M: Message)
+{
+	if(NPlace_libre == N)
+		wait(empty);
+	extraire(M);
+		NPlace_libre++;
+	signal(full);
+}
+\end{lstlisting}
+
+\newpage
+
+\section*{Variante 2}
+
+\begin{lstlisting}[language=C, caption=Corps moniteur Prod\_Cons]
+Condition  Full, Empty;
+Condition Ctype[2];
+int nb_buffer;
+Type next;
+
+void Deposer(M:Message, type:Type)
+{
+	if(nb_buffer==0 || type != next)
+		wait(Ctype[type]);
+	nb_buffer--;
+	inserer(M);
+	next = (next == Blanc ? Noir:Blanc);
+	if(nb_buffer != 0)
+		Signal(Ctype[next]);
+	Signal(Empty);
+
+
+
+}
+
+void Retirer(M:Message, type:Type)
+{
+	if(nb_buffer == N)
+		wait(Empty);
+	extraire(M);
+		nb_buffer++;
+	
+	Signal(Ctype[next]);
+
+}
+\end{lstlisting}
+
+\newpage
+\section*{Variante 3}
+
+\begin{lstlisting}[language=C, caption=Corps moniteur Prod\_Cons]
+
+Condition  Full, Empty;
+Condition Ctype[2];
+int nb_buffer;
+Type next;
+
+void Deposer(M:Message, type:Type)
+{
+	if(nb_buffer==0)
+		Wait(Full);
+
+	inserer(M);
+	nb_buffer--;
+	Signal(Ctype[peek_next()]);
+
+
+
+}
+
+void Retirer(M:Message, type:Type)
+{
+	if(nb_buffer == N || peek_next() != type)
+		wait(Ctype[type]);
+	extraire(M);
+		nb_buffer++;
+	if(nb_buffer != N)
+		Signal(Ctype[peek_next()]);
+	Signal(Full);
+
+}
+
+\end{lstlisting}
+
+\end{document}

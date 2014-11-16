@@ -1,0 +1,539 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{listings}
+\usepackage{xcolor}
+
+\definecolor{gris1}{gray}{0.40}
+\definecolor{gris2}{gray}{0.55}
+\definecolor{gris3}{gray}{0.65}
+\definecolor{gris4}{gray}{0.50}
+\definecolor{vert}{rgb}{0,0.4,0}
+\definecolor{violet}{rgb}{0.65, 0.2, 0.65}
+\definecolor{bleu1}{rgb}{0,0,0.8}
+\definecolor{bleu2}{rgb}{0,0.2,0.6}
+\definecolor{bleu3}{rgb}{0,0.2,0.2}
+\definecolor{rouge}{HTML}{F93928}
+
+\lstdefinelanguage{algo}{%
+   morekeywords={%
+    %%% couleur 1
+		importer, programme, glossaire, fonction, procedure, constante, type, 
+	%%% IMPORT & Co.
+		si, sinon, switch, alors, fin, tantque, debut, faire, lorsque, fin lorsque, 
+		declenche, declencher, enregistrement, tableau, retourne, retourner, =, pour, a,
+		/=, <, >, traite,exception, 
+	%%% types 
+		Entier, Reel, Booleen, Caractere, Réél, Booléen, Caractère,
+	%%% types 
+		entree, maj, sortie,entrée,
+	%%% types 
+		et, ou, non,
+		Debut, début, debut, fin, Fin, faux, vrai, Faux, Vrai
+	},
+  sensitive=true,
+  morecomment=[l]{--},
+  morestring=[b]',
+}
+
+\lstset{language=algo,
+    %%% BOUCLE, TEST & Co.
+      emph={importer, programme, glossaire, fonction, procedure, constante, type},
+      emphstyle=\color{bleu2},
+    %%% IMPORT & Co.  
+	emph={[2]
+		si, sinon, switch, alors, fin , tantque, debut, faire, lorsque, fin lorsque, 
+		declencher, retourner, et, ou, non,enregistrement, retourner, retourne, 
+		tableau, /=, <, =, >, traite,exception, pour, a
+	},
+      emphstyle=[2]\color{bleu1},
+    %%% FONCTIONS NUMERIQUES
+		emph={[3]Vrai, vrai, Faux, faux},
+      emphstyle=[3]\color{red},
+    %%% FONCTIONS NUMERIQUES
+      emph={[4]entree, maj, sortie, entrée},	
+      emphstyle=[4]\color{gris1},
+}
+
+\lstset{ % general style for listings 
+   numbers=left 
+   , literate={é}{{\'e}}1 {è}{{\`e}}1 {à}{{\`a}}1 {ê}{{\^e}}1 {É}{{\'E}}1 {ô}{{\^o}}1 {€}{{\euro}}1{°}{{$^{\circ}$}}1 {ç}{ {c}}1 {ù}{u}1
+	, extendedchars=\true
+   , tabsize=2 
+   , stepnumber=2
+   , frame=l
+   , framerule=1.1pt
+   , linewidth=510px
+   , breaklines=true 
+   , basicstyle=\footnotesize\ttfamily 
+   , numberstyle=\tiny\ttfamily 
+   , framexleftmargin=0mm 
+   , xleftmargin=0mm 
+   , captionpos=b 
+	, keywordstyle=\color{bleu2}
+	, commentstyle=\color{vert}
+	, stringstyle=\color{rouge}
+	, showstringspaces=false
+	, extendedchars=true
+	, mathescape=true
+	, prebreak=\raisebox{0ex}[0ex][0ex]
+		   {\ensuremath{\hookleftarrow}}
+	,breakatwhitespace=true
+} 
+%	\lstlistoflistings
+%	\addcontentsline{toc}{part}{List of code examples}
+
+\author{Charles Fallourd}
+\title{Traduction des Langages\\ TD}
+\date{}
+\begin{document}
+\maketitle
+
+\part*{TD 5 : Quadruplet}
+
+
+\begin{flalign*}
+<statlist> &:= <inst><suite>\\
+<suite> &:= ; <statlist> | \lambda\\
+<inst> &:= ... | <ifstat> | <whilestat> | <repeatstat> | <forstat> | <casestat> | ... \\
+<repeatstat> &:= repeat <statlist> until <exp> endrepeat \\
+<forstat> &:= for ident := <exp1> step <exp2> until <exp3> do <statlist> endfor \\
+<casestat> &:= case <exp> of <alternative> { ; <alternative> }* \\
+&otherwise <statlist> endcase\\
+\end{flalign*}
+
+
+
+\section*{Methodologie pour les trois questions}
+\begin{enumerate}
+\item Donner le schéma équivalent en quadruplets.
+\item Inventaire des "problèmes" : verification types et gestion des adresses des quadruplets. Ainsi que l'inventaire des solutions apportées.
+\item Mise en oeuvre des procédures de descente récursive pour engendrer le schéma en quadruplets voulus en tenant compte des solutions apportées.
+\end{enumerate}
+
+\section*{Exercice 1}
+Mettre en oeuvre un processus de traduction en quadruplets des structures de controle pour <repeatstat>.
+
+\subsection*{Schéma équivalent en quadruplet}
+
+$\\
+\uparrow \\
+\vdots \ \ quadruplet\  engendre\ par\ <statlist>\\
+\downarrow\\
+\uparrow \\
+\vdots \ \ quadruplet\  engendre\ par\ <exp>\\
+\downarrow\\
+=?, <exp>.res, 0, DEBUT
+$
+ici la dernière ligne est un quadruplet, (=?, exp.res, 0, DEBUT)
+
+\subsection*{Inventaire des problèmes et solution apportées}
+
+\begin{enumerate}
+\item Verif Type : verifier que le resultlist de EXP(<exp>.res) est une variable déclarée Booléenne. 
+$\Rightarrow$ CHECKTYPE
+\item Référence en arrière à DEBUT
+$\Rightarrow$ variable DEBUT qui contiendra l'@ du 1\ier{} quadruplet engendré par STATLIST qui est dans NEXTQUAD
+\end{enumerate}
+
+\subsection*{Mise en oeuvre }
+\begin{lstlisting}[language=Algo, framerule=0pt,  numbers=none]
+procedure REPEATSTAT is
+	Res: String; -- nom de la variable qui contiendra le resultat du test
+	Debut: Integer; -- garder l'@ du $1\ier{}$ quadruplet engendre par STATLIST
+	
+	begin
+		SKIP('repeat');
+		Debut := NEXTQUAD;
+		STATLIST ;
+		SKIP('until');
+		EXP(Res);
+		CHECKTYPE(Res, Boolean);
+		GEN("=?," ^Res^," O,"^str(Debut));
+		SKIP('endrepeat');
+	end REPEATSTAT;
+\end{lstlisting}
+
+\section*{Exercice 2}
+De meme pour <forstat>
+
+\subsection*{Schéma équivalent en quadruplet}
+
+$\\
+\uparrow \\
+\vdots \ \ quadruplet\  engendre\ par\ <exp2>\\
+\downarrow\\
+:= , <exp1>.res, nil, ident
+\uparrow \\
+\vdots \ \ quadruplet\  engendre\ par\ <exp2>\\
+\downarrow\\
+\uparrow \\
+\vdots \ \ quadruplet\  engendre\ par\ <exp3>\\
+\downarrow\\
+TEST > ?, ident, <exp3>.res, FIN \\
+\uparrow \\
+\vdots \ \ quadruplet\  engendre\ par\ <statlist>\\
+\downarrow\\
++, ident, <exp2>.res, ident\\
+goto, nil, nil\ TEST
+FIN
+$
+
+ici TEST (> ?), (ident), (<exp3>.res), (FIN ), TEST est un label, et c'est un quadruplet jump conditionnel. Si (> ?) alors jump FIN.
+
+\subsection*{Inventaire des problèmes et solution apportées}
+
+\begin{enumerate}
+\item verif type : les 3 résultats $res_i$ des 3 <$exp_i$> doivent être des variables déclarées \emph{Integer} (prob 1)
+\item Référence en avant à FIN : \subitem engendrer un quadruplet incomplet (4\ieme{} champ à nil) (prob 2.)
+\subitem conserver l'@ de ce quadruplet incomplet dans une variable TEST (2.1)
+\subitem mettre à jour le 4\ieme{} champs (@) du quadruplet incomplet quand on connait l'@ FIN $\Rightarrow $BACKPATCH (2.2)
+\item Référence en arrière à TEST $\Rightarrow$ conserver l'@ du quadruplet TEST (2.3)
+\end{enumerate}
+
+\subsection*{Mise en oeuvre}
+
+\begin{lstlisting}[language=Algo, framerule=0pt,  numbers=none]
+
+procedure FORSTAT is
+	Res1, Res2, Res3 : String -- resultats des 3 <$exp_i$>
+	Test : Integer;
+	VarBoucle : String;
+	begin
+		SKIP('for');
+        if NEXTS != 'ident' then ERREUR; endif; -- 'ident' = unite lexical 'ident' (genre que c'est une variable)
+		varBoucle := NEXTS.Valeur ; -- ici on prend la valeur de l'unite lexical ident
+		SCAN;
+		SKIP(':=');
+		EXP(Res1);
+		CHECKTYPE(Res1, Integer); -- (prob 1)
+		GEN(":=,"^Res1^",nil,"^varBoucle);
+		SKIP('step');
+		EXP(Res2);
+		CHECKTYPE(Res2, Integer); -- (prob 1)
+		SKIP('until');
+		EXP(Res3);
+		CHECKTYPE(Res3, Integer); -- (prob 1)
+		Test := NEXTQUAD; -- (prob 2.2)
+		GEN(">?,"^VarBoucle^","^Res3^",nil"); -- (prob 2.1)
+		SKIP('do');
+		STATLIST;
+		GEN("+,"^VarBoucle^","^Res2^","^VarBoucle);
+		GEN("goto,nil,nil"^str(teST));
+		BACKPATCH([Test], NEXTQUAD); -- (prob 3)
+		SKIP('endfor');
+	end FORSTAT ;
+		
+
+\end{lstlisting}
+$\bigwedge$ est l'opérateur de concaténation !
+\newpage
+\section*{Exercice 3}
+De meme pour <casestat>
+\subsection*{Schéma équivalent en quadruplet}
+$\\
+\uparrow \\
+\vdots  \ quadruplet\ engendrer\ par\ <exp> \\
+\downarrow \\
+\neq ?\ , \ <exp>.res,\ nb1,\ ALT2\\
+\uparrow \\
+\vdots  \ quadruplet\ engendrer\ par\ <alternative>  pour S1\\
+\downarrow \\
+goto, nil, nill,\ FIN\\
+ALT2\ \neq ?\ , \ <exp>.res,\ nb1,\ ALT3\\
+\uparrow \\
+\vdots  \ quadruplet\ engendrer\ par\ <alternative>  pour S2\\
+\downarrow \\
+goto, nil, nill,\ FIN\\
+\vdots \ ALT3 \\
+ALT_p \ \neq ? <exp>.res,\ nb_p,\ OTHER\\
+\vdots  \ quadruplet\ engendrer\ par\ <alternative>  pour Sp\\
+goto, nil, nill,\ FIN\\
+OTHER\\
+\uparrow \\
+\vdots  \ quadruplet\ pour\ S_{p+1} \\
+\downarrow \\
+FIN\\
+$
+
+
+\subsection*{Inventaire des problèmes et solution apportées}
+\begin{enumerate}
+    \item Verif type: Integer de <exp>.res $\Rightarrow$ CHECKTYPE $\alpha$
+    \item Reference en avant à $ALT_{i+1}$ \\
+        mémoriser dans une variable ALT ($\beta_1$) l'adresse du quadruplet engendré\\
+        incomplet et maj du champs @ de ce quadruplet quand on connait. $\beta_2$\\
+        $Rightarrow$ $\beta_3$ $\Rightarrow$ BACKPATCH
+    \item Réference en avant à FIN\\
+        mémoriser les @ des quadruplet engendrés $(\gamma_1)$ incompletdans une liste $(\gamma_2)$\\
+        et on met à jours les champs @ de tous les audruplet de la liste avec la même @ FIN quand on la connait\\
+        $\Rightarrow $ BACKPATCH $\gamma_3$
+        \item Verification "sémantique"\\
+            $\Rightarrow$ chaque $nb_i$ doit être différent. On doit donc avoir une liste de nombre.\\
+            on suppose qu'on a un outil MEMBER(E,L) $= VRAI\ si\ e\ \epsilon\ L$ 
+
+\end{enumerate}
+\subsection*{Mise en oeuvre}
+\begin{lstlisting}[language=Algo]
+procedure CASESTAT is
+    Res: String ;-- resultatde EXP
+    ListFin: list of Integer;
+    ListNbre: list of Integer;
+    begin 
+        SKIP('case');
+        EXP(Res);
+        CHECKTYPE(Res,Integer); -- $\alpha$
+        SKIP('of');
+        ListFin: MAKELIST;
+        ListNbre: MAKELIST; -- on creer les listes vide
+        ALTERNATIVE(Res,ListNbre);
+        -- NEXTQUAD -1 contient l'@ du 
+        -- goto, nil,nil,nil
+        ListFin := MERGE(ListFin, [NEXTQUAD-1]); -- $\gamma_1$
+        While NEXTS = ';' loop
+            SKIP(';'); -- ou SCAN puisqu'on sait déjà que c'est un ';'
+            ALTERNATIVE(Res,ListNbre);
+            ListFin := MERGE(ListFin, [NEXTQUAD-1]);
+        endloop;
+        SKIP('otherwise');
+        STATLIST;
+        BACKPATCH(ListFin,NEXTQUAD); -- $\gamma_3$
+        SKIP('endcase');
+    end CASESTAT;
+\end{lstlisting}
+\begin{lstlisting}
+procedure ALTERNATIVE(Res in String, ListNbre in out) is
+    ALT: Integer;
+    begin
+        if NEXTS $\neq$ 'number' then ERREUR; endif;
+        if MEMBER(NEXTS.Valeur, ListNbre) then ERREUR; endif; -- $\alpha$
+        ListNbre := MERGE([NEXTS.Valeur], ListNbre);
+        ALT := NEXTQUAD; -- $\beta_1$
+        GEN("$\neq$ ?,"^Res^","^str(NEXTS.Valeur)^",nil"); -- $\beta_2$
+        SCAN;
+        SKIP(':');
+        STATLIST;
+        GEN("goto,nil,nil,nil"); -- $\gamma_2$
+        BACKPATCH([ALT], NEXTQUAD); -- $\beta_3$
+    end ALTERNATIVE;
+
+\end{lstlisting}
+
+\part*{TD 6  \\ Génération de code \& analyse ascendante}
+
+Todo : 
+    * action sémantique = ?
+
+\section*{Méthode de la descente récursive}
+
+\begin{flalign*}
+<statlist> &:= <inst><suite>\\
+<suite> &:= ; <statlist> | \lambda\\
+<inst> &:= ... | <ifstat> | <whilestat> | <repeatstat> | <forstat> | <casestat> | ... \\
+<loopstat> &:= ident: loop <statlist> endloop\\
+<exitstat> &:= when <exp> exit ident
+\end{flalign*}
+
+
+\begin{lstlisting}[language=Algo]
+A: loop
+    ...
+    when E1 exit A;
+    ...
+    B : loop
+        ...
+        when E2 exit A;
+        ...
+        when E3 exit B;
+        ...
+        endloop;
+    ...
+    when E4 exit A;
+    ...
+    endloop
+\end{lstlisting}
+
+\subsection*{Schéma équivalent en quadruplet de l'exemple}
+$\\
+Début A
+\uparrow \\
+\vdots  ... (quelque chose ...)\\
+\downarrow \\
+\uparrow \\
+\vdots  \ quadruplet\ engendré\ pour\ E_{1} \\
+\downarrow \\
+\neq ?\ , \ E1.res,\ 1,\ finA Il\ s'agit\ de\ <exitstat>\\
+\uparrow \\
+\vdots  ... (quelque chose ...)\\
+\downarrow \\
+Début\ B\\
+\uparrow \\
+\vdots  ... (quelque chose ...)\\
+\downarrow \\
+\uparrow \\
+\vdots  \ quadruplet\ pour\ E_{2} \\
+\downarrow \\
+\uparrow \\
+\downarrow \\
+\neq ?\ , \ E2.res,\ 1,\ finA Il\ s'agit\ de\ <exitstat>\\
+\uparrow \\
+\vdots  ... (quelque chose ...)\\
+\downarrow \\
+\uparrow \\
+\vdots  \ quadruplet\ pour\ E_{3} \\
+\downarrow \\
+\neq ?\ , \ E3.res,\ 1,\ finB Il\ s'agit\ de\ <exitstat>\\
+\uparrow \\
+\vdots  ... (quelque chose ...)\\
+\downarrow \\
+goto, nil,nil,'DebutB'\\
+finB\\
+\uparrow \\
+\vdots  ... (quelque chose ...)\\
+\downarrow \\
+\uparrow \\
+\vdots  \ quadruplet\ pour\ E_{4} \\
+\downarrow \\
+\neq ?\ , \ E4.res,\ 1,\ finA Il\ s'agit\ de\ <exitstat>\\
+\uparrow \\
+\vdots  ... (quelque chose ...)\\
+\downarrow \\
+goto,nil,nil,DebutA\\
+finA\\
+$
+
+\subsection*{Inventaire des problèmes et solution apportées}
+\begin{enumerate}
+    \item Vérifier le type booléen des $E_{i}$.res (des exitstat).
+        $\Rightarrow$ CHEKTYPE.
+    \item Référence en arrière à Début $\Rightarrow$ mémoriser l'@ dans une variable.
+    \item Référence en avant à Fin $\Rightarrow$ engendrer un quad incomplet,
+    mémoriser son @ dans liste de quad incomplets et on met à jour le champs
+    @ avec BACKPATCH. 
+    $\Rightarrow$ Associer la liste de quad incomplets à un nom de boucle.
+\end{enumerate}
+
+Attention !!
+On ne veut pas de boucles imbriquées de même nom.\\
+On peut vouloir le même nom sur deux boucles "consécutives".\\
+$\Rightarrow$ On va utiliser la tables des symboles TDS.
+Dans l'exemple suivant on pourrait rajouter d'autres informations.\\
+
+lqi = liste des quadruplets incomplets.\\
+\begin{tabular}{|c|c|c|c|c|c|}
+    \hline
+    & nomBoucle  & lqi & type&&\\
+    \hline
+    1 & &&&&\\
+    \hline
+    P & A & TDS[P].lqi& loop &&\\
+    \hline
+    &&&&&\\
+    \hline
+    Q & B &&&&\\
+\end{tabular}
+
+On va vérifier que le nom d'une boucle imbriqué n'est pas déjà dans la table \\
+$\Rightarrow$ SEARCH(S:string, out p:int, T:type) . Si p = 0, n'existe pas dans TDS.
+nom de boucle et même type boucle différent ! Si c'est un autre type, pas grave.
+Pour ajouter à TDS $\Rightarrow$  ENTER(S:String, out P:int)\\
+CANCEL(S:String, T:type) $\Rightarrow$ va supprimer l'entré de type T et de nom S.
+
+\begin{lstlisting}[language=Algo]
+procedure LOOPSTAT(in S:String) 
+    -- S est le nom de la boucle (voir ident ... apparemment la meme chose)
+    P: Integer;
+    DEBUT: Integer;
+    begin
+        SKIP('loop');
+        SEARCH(S,P, 'loop');
+        si P!=0 then ERREUR;
+        -- on a vérifié que le nom de boucle n'est pas
+        -- déjà utilisé comme boucle englobante
+
+        -- on met le nom S dans TDS
+        ENTER(S,P);
+        TDS[P].types := 'loop';
+        TDS.[P].lqi := MAKELIST;
+
+        -- on mémorise l'@ du premier quad DEBUT
+        DEBUT := NEXTQUAD;
+        STATLIST;
+        SKIP('endloop');
+        GEN("goto,nill,nill"^str(DEBUT));
+        BACKPATCH(TDS[P].lqi,NEXTQUAD);
+
+        -- effacer le nom de la boucle de la TPS
+        CANCEL(S,'loop');
+    end LOOPSTAT
+
+\end{lstlisting}
+
+\begin{lstlisting}[language=Algo]
+procedure EXITSTAT is
+    Res: String;
+    P: Integer;
+    begin
+    SKIP('when');
+    EXP(RES);
+    CHECKTYPE(Res, Boolean);
+    SKIP('exit');
+    if NEXTS != 'identicateur' then ERREUR;
+    SEARCH(NEXTS.String, P, 'loop');
+    if P = 0 then ERREUR;
+    TDS[P].lqi := MERGE(TDS[P].lqi,[NEXTQUAD]);
+    GEN("=?,"^Res^",s,nill");
+    SCAN;
+    end EXITSTAT
+
+\end{lstlisting}
+
+\section*{Traduction par analyse ascendante}
+
+
+\begin{flalign}
+<forstat> &:= ident:= <exp1>step<exp2>until<exp3>do<statlist>endfor\\
+<loopstat> &:= ident: loop <statlist> endloop
+\end{flalign}
+
+\subsection*{Question 1}
+
+$\Rightarrow$ analyseur LR(k). le non terminal le plus à Droite.\\
+k=1 dans la réalité.\\
+Ces analyseur trouvent une grammaire et la réduit.\\
+On part du mot et on remonte vers l'axiome.\\
+A se dérive en B et B se réduit en A. (ouai d'un coup c'est plus clair ><)\\
+
+Pour se faire:\\
+même schéma en quadruplet,\\
+même problemes et solutions.\\
+MAIS la mise en oeuvre est différente. Ce n'est plus des procédures de descente récursive.\\
+A la place:
+\begin{enumerate}
+    \item coupures : où ?
+    \item piles sémantiques ? conserver des noms. Conserver les @ des quadruplets.
+\end{enumerate}
+Piles sémantiques : Pile des noms Res. pile des adresses des quadruplet Adr.\\
+Pour accéder à l'info : nonTerminal.NomPile\\
+
+\subsection*{Mise en oeuvre en ascendant}
+\begin{lstlisting}
+SEARCH(ident.Res,P,'loop');
+if P!=0 then ERREUR;
+ENTER(ident.Res,P);
+TDS[P].lqi := MAKELIST;
+TDS[P].type := 'loop';
+M.Adr := NEXTQUAND;
+STATLIST;
+\end{lstlisting}
+Alors ça, aucune idée d'où ça va ...
+\begin{lstlisting}
+GEN("goto,nil,nil,"^str(M.Adr));
+SEARCH(ident.Res,P,'loop');
+BACKPATCH(TDS[P].lqi,NEXTQUAD);
+\end{lstlisting}
+\end{document}

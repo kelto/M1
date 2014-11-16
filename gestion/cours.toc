@@ -1,0 +1,2 @@
+\select@language {french}
+\contentsline {section}{\numberline {1}Table des mati{\`e}res\markboth {\MakeUppercase {Table des mati{\`e}res}}{\MakeUppercase {Table des mati{\`e}res}}}{1}{section.1}

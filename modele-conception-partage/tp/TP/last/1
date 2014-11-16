@@ -1,0 +1,43 @@
+#include <stdlib.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <sys/wait.h>
+#include <sys/shm.h>
+#include <sys/sem.h>
+#include <sys/types.h>
+#include <sys/ipc.h>
+
+typedef struct ringBuffer_
+{
+    char * buffer;
+    int index_read;
+    int index_write;
+}RingBuffer;
+
+int semid;
+unsigned short init[] = {1,0};
+union semun
+{
+    int val;
+    struct semid_ds * buf;
+    unsigned short *array;
+}arg;
+struct sembuf op;
+
+void init_sem()
+{
+    key_t key;
+    if((key = ftok("key",8)) == -1)
+    {
+        perror("ftok failed\n");
+        exit(1);
+    }
+
+    if((semid = semget(key,2, IPC_CREAT)))
+}
+
+int main(int argc, const char *argv[])
+{
+
+    return 0;
+}

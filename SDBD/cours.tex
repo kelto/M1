@@ -1,0 +1,54 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+
+
+
+\title{Système de Base de Données}
+\date{}
+
+\begin{document}
+\maketitle
+
+\part{Intro et rappel BD et SGBD}
+\part{Evaluer et optimiser une requete relationnel}
+\section{introduction}
+\begin{enumerate}
+\item[évaluer :] compiler
+\item[analyse :] plan d'exécution (arborescente cf image 1)
+\item[sémantique :] le sens (typage), typage retrouvé dans la métabase ainsi que les contraintes, etc ...
+\end{enumerate}
+
+optimalité = minimiser le temps de réponse
+
+(arbre 2)
+arbre linéaire gauche (((R1$\Join$R2)$\Join$R3)$\Join$R4)
+
+(arbre 3)
+arbre linéaire droit (R1$\Join$(R2$\Join$(R3$\Join$R4)))
+
+(arbre 4)
+arbre ramifié ((R1$\Join$R2)$\Join$(R3$\Join$R4))
+\section{Comment implémenter les relation de base}
+
+\begin{eqnarray*}
+	\mid page \mid = 4Ko = 35 tuples net (40 tuples brut)
+\end{eqnarray*}
+
+\subsection{organisation hachée (séquence aléatoire)}
+4 moyens :
+\begin{enumerate}
+\item séquentiel
+\item séquentiel indexé
+\item relatif
+\item table de hachage
+\end{enumerate}
+\part{Introduction aux transactions}
+\section{Introduction}
+
+
+\end{document}

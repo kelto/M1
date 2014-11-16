@@ -1,0 +1,233 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{listings<`3`>}
+\usepackage{xcolor}
+\definecolor{gris1}{gray}{0.40}
+\definecolor{gris2}{gray}{0.55}
+\definecolor{gris3}{gray}{0.65}
+\definecolor{gris4}{gray}{0.50}
+\definecolor{vert}{rgb}{0,0.4,0}
+\definecolor{violet}{rgb}{0.65, 0.2, 0.65}
+\definecolor{bleu1}{rgb}{0,0,0.8}
+\definecolor{bleu2}{rgb}{0,0.2,0.6}
+\definecolor{bleu3}{rgb}{0,0.2,0.2}
+\definecolor{rouge}{HTML}{F93928}
+
+
+\lstdefinelanguage{algo}{%
+   morekeywords={%
+    %%% couleur 1
+		importer, programme, glossaire, fonction, procedure, constante, type, 
+	%%% IMPORT & Co.
+		si, sinon, switch, alors, fin, tantque, debut, faire, lorsque, fin lorsque, 
+		declenche, declencher, enregistrement, tableau, retourne, retourner, =, pour, a,
+		/=, <, >, traite,exception, 
+	%%% types 
+		Entier, Reel, Booleen, Caractere, Réél, Booléen, Caractère,
+	%%% types 
+		entree, maj, sortie,entrée,
+	%%% types 
+		et, ou, non,
+		Debut, début, debut, fin, Fin, faux, vrai, Faux, Vrai
+	},
+  sensitive=true,
+  morecomment=[l]{--},
+  morestring=[b]',
+}
+
+\lstset{language=algo,
+    %%% BOUCLE, TEST & Co.
+      emph={importer, programme, glossaire, fonction, procedure, constante, type},
+      emphstyle=\color{bleu2},
+    %%% IMPORT & Co.  
+	emph={[2]
+		si, sinon, switch, alors, fin , tantque, debut, faire, lorsque, fin lorsque, 
+		declencher, retourner, et, ou, non,enregistrement, retourner, retourne, 
+		tableau, /=, <, =, >, traite,exception, pour, a
+	},
+      emphstyle=[2]\color{bleu1},
+    %%% FONCTIONS NUMERIQUES
+		emph={[3]Vrai, vrai, Faux, faux},
+      emphstyle=[3]\color{red},
+    %%% FONCTIONS NUMERIQUES
+      emph={[4]entree, maj, sortie, entrée},	
+      emphstyle=[4]\color{gris1},
+}
+
+
+\lstset{ % general style for listings 
+   numbers=left 
+   , literate={é}{{\'e}}1 {è}{{\`e}}1 {à}{{\`a}}1 {ê}{{\^e}}1 {É}{{\'E}}1 {ô}{{\^o}}1 {€}{{\euro}}1{°}{{$^{\circ}$}}1 {ç}{ {c}}1 {ù}{u}1
+	, extendedchars=\true
+   , tabsize=2 
+   , stepnumber=2
+   , frame=l
+   , framerule=1.1pt
+   , linewidth=510px
+   , breaklines=true 
+   , basicstyle=\footnotesize\ttfamily 
+   , numberstyle=\tiny\ttfamily 
+   , framexleftmargin=0mm 
+   , xleftmargin=0mm 
+   , captionpos=b 
+	, keywordstyle=\color{bleu2}
+	, commentstyle=\color{vert}
+	, stringstyle=\color{rouge}
+	, showstringspaces=false
+	, extendedchars=true
+	, mathescape=true
+	, prebreak=\raisebox{0ex}[0ex][0ex]
+		   {\ensuremath{\hookleftarrow}}
+	,breakatwhitespace=true
+} 
+%	\lstlistoflistings
+%	\addcontentsline{toc}{part}{List of code examples}
+
+\title{SDBD\\TD}
+\date{}
+\author{Charles Fallourd}
+\begin{document}
+\maketitle
+\part*{Transaction}
+\section*{Cohérence}
+R(X); lecture de X \\
+W(X); écriture de X \\
+a; Abort \\
+C; Commit \\
+$R_i(X) \backsim T_i \cdot R(X)$ \\
+\begin{enumerate}
+\item $R_1(X); W_1(X); R_2(X); W_2(X); a_1; C_2$
+\item $R_1(X); W_1(X); R_2(Y); W_2(Y); a_1; C_2$
+\item $R_1(X); R_2(X); R_2(Y); W_2(Y); R_1(Z); a; C_2$
+\item $R_1(X); R_2(X); W_2(X); W_1(X); C_1; C_2$
+\item $R_1(X); W_1(X); R_2(X); W_2(X);  C_1; C_2$
+\end{enumerate}
+\vspace{1cm}
+Quels sont les ordonnancements qui produisent des anomalies ?
+\vspace{1cm}
+\begin{enumerate}
+\item $T_2$ lit une valeur de X modifiée par $T_1$ qui ne sera pas validée.$\Rightarrow$ anomalie
+\item Pas d'anomalie.
+\item Pas d'anomalie.
+\item Problème : $W_1$ modifie une valeur qui a déjà été lue pour mise à jour.
+\item Ok car équivalent à $T_1\ ;\ T_2$
+\end{enumerate}
+\vspace{1cm}
+\section*{Cohérence ordonnancement}
+\vspace{1cm}
+\begin{tabular}{c|c}
+$T_1$ & $T_2$\\
+&\\
+R(soldex); & \\
+soldex = soldex+100;&\\
+w(soldex);; & \\
+\hline
+& R(soldex); \\
+&soldex = $soldex * 1.1$;\\
+&W(soldex);\\
+&R(soldey);\\
+&W(soldey);\\
+\hline
+R(soldexy); & \\
+soldey = soldey-100; & \\
+W(soldey); & \\
+C; & C ;
+\end{tabular}
+\vspace{1cm}
+
+L'ordonnancement est-il cohérent ? (sérialisable) \\
+soldex = 100 $\Rightarrow$ 200 $\Rightarrow$ 220\\
+soldey = 100 $\Rightarrow$ 220 $\Rightarrow$ 120\\
+
+$T_1\ ;\ T_2$ : \\
+soldex = 100 $\Rightarrow$ 200 $\Rightarrow$ 220 \\
+soldey = 200 $\Rightarrow$ 100 $\Rightarrow$ 110 \\
+$T_2\ ; T_1$ : \\
+soldex = 100 $\Rightarrow$ 110 $\Rightarrow$ 210 \\
+soldey = 200 $\Rightarrow$ 220 $\Rightarrow$ 120 \\
+$\Rightarrow$ Non cohérent ! $T_1\ ;\ T_2 \neq T_2\ ; T_1$  \\
+\vspace{1cm}
+\begin{eqnarray*}
+T_1 &=& R(X); R(Y); W(X) ; W(Y) \\
+T_2 &=& R(Y); W(X)
+\end{eqnarray*}
+
+\begin{enumerate}
+\item[a/] Donner un ordonncement de $T_1$ et $T_2$ sérialisable
+\item[b/] Donner un ordonncement de $T_1$ et $T_2$ non sérialisable
+\end{enumerate}
+Solution: \\
+\begin{enumerate}
+\item[a/] $R_1(X)$; $R_2(Y)$;\ $W_1(X)$;\ $W_2(X)$;\ $W_1(Y)$
+\item[b/] $R_1(X)$;\ $R_2(Y)$; $W_2(X)$; $W_1(X)$; $W_1(Y)$
+\end{enumerate}
+
+\section*{Lock}
+LS(X): Lock share de X\\
+LX(X): Lock exclusive de X\\
+UL(X) : unlock de X
+
+\begin{eqnarray*}
+    T_1 &=& LX(X)\ ;\ R(X)\ ;\ X=X+100;\ W(X);\ LX(Y) ;\ R(Y);\ Y=Y-100;\ W(Y);\ UL(X);\ UL(Y);\\
+T_2 &=& LX(Y) ;\ R(Y) ;\ Y= Y+4 ;\ W(Y) ;\ LX(Z) ;\ Z=Z-500;\ W(Z);\ UL(Y);\ UL(Z);\\
+T_3 &=& LX(Z);\ Z=0;\ W(Z);\ LX(X);\ X=X-500;\ W(X);\ UL(Z);\ UL(X)
+\end{eqnarray*}
+\begin{enumerate}
+    \item[a)] transaction bien formés ? oui pour toutes les transactions
+    \item[b)] transaction à 2 $\Phi$ ? 
+\end{enumerate}
+Bien formée : LS au moins pour leture, LX pour écriture et libération des verrous
+2 $\Phi$ (2 phases) : Pose des verrous puis libération. Pas pose + libération + pose + libération.
+(Phase d'extension puis libération).\\
+Que peut-il se passer lors de l'éxécution non sequentielle de $T_1$, $T_2$ et $T_3$ ?\\
+$\Rightarrow$ Risque de deadlock.
+\section*{Procédure}
+\begin{lstlisting}[language=Algo]
+Procedure credit(solde: x, montant: y)
+    debut
+        LX(X);
+        R(X);
+        X = X+Y;
+        W(X);
+        UL(X);
+    fin
+\end{lstlisting}
+\begin{lstlisting}[language=Algo]
+Procedure debit(solde:x, montant y)
+    debut
+        LX(x);
+        R(x);
+        x=x-y;
+        w(x);
+        UL(x);
+    fin
+\end{lstlisting}
+Ecrire la procédure Transfert.
+\begin{lstlisting}
+Procedure Transfert(compte: x,z, montant y)
+    debut
+        LX(x);
+        LX(z);
+        R(x);
+        x=x-y;
+        W(x);
+        R(Z);
+        z = z+y;
+        W(z);
+        UL(x);
+        UL(z);
+    fin
+\end{lstlisting}
+On est obligé de tout refaire ... il faut que la procédure soit à deux phases. Si on appelle les deux procédure précédente,
+il y aura extension et libération deux fois.
+\section*{?}
+Update, delete et insert $\Rightarrow$ verouille les tuples accédés en exclusifs.\\
+Commit et Rollback dévérouille tous les verrous.\\
+Q1: Suffisant pour écrire des transactions bien formées et à 2 $\Phi$  ?\\
+$\Rightarrow$ Non il manque le select !
+\end{document}

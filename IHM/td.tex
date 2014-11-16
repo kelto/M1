@@ -1,0 +1,246 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{listings}
+\usepackage{xcolor}
+
+\definecolor{gris1}{gray}{0.40}
+\definecolor{gris2}{gray}{0.55}
+\definecolor{gris3}{gray}{0.65}
+\definecolor{gris4}{gray}{0.50}
+\definecolor{vert}{rgb}{0,0.4,0}
+\definecolor{violet}{rgb}{0.65, 0.2, 0.65}
+\definecolor{bleu1}{rgb}{0,0,0.8}
+\definecolor{bleu2}{rgb}{0,0.2,0.6}
+\definecolor{bleu3}{rgb}{0,0.2,0.2}
+\definecolor{rouge}{HTML}{F93928}
+
+\lstdefinelanguage{algo}{%
+   morekeywords={%
+    %%% couleur 1
+		importer, programme, glossaire, fonction, procedure, constante, type, 
+	%%% IMPORT & Co.
+		si, sinon, switch, alors, fin, tantque, debut, faire, lorsque, fin lorsque, 
+		declenche, declencher, enregistrement, tableau, retourne, retourner, =, pour, a,
+		/=, <, >, traite,exception, 
+	%%% types 
+		Entier, Reel, Booleen, Caractere, Réél, Booléen, Caractère,
+	%%% types 
+		entree, maj, sortie,entrée,
+	%%% types 
+		et, ou, non,
+		Debut, début, debut, fin, Fin, faux, vrai, Faux, Vrai
+	},
+  sensitive=true,
+  morecomment=[l]{--},
+  morestring=[b]',
+}
+
+\lstset{language=algo,
+    %%% BOUCLE, TEST & Co.
+      emph={importer, programme, glossaire, fonction, procedure, constante, type},
+      emphstyle=\color{bleu2},
+    %%% IMPORT & Co.  
+	emph={[2]
+		si, sinon, switch, alors, fin , tantque, debut, faire, lorsque, fin lorsque, 
+		declencher, retourner, et, ou, non,enregistrement, retourner, retourne, 
+		tableau, /=, <, =, >, traite,exception, pour, a
+	},
+      emphstyle=[2]\color{bleu1},
+    %%% FONCTIONS NUMERIQUES
+		emph={[3]Vrai, vrai, Faux, faux},
+      emphstyle=[3]\color{red},
+    %%% FONCTIONS NUMERIQUES
+      emph={[4]entree, maj, sortie, entrée},	
+      emphstyle=[4]\color{gris1},
+}
+
+\lstset{ % general style for listings 
+   numbers=left 
+   , literate={é}{{\'e}}1 {è}{{\`e}}1 {à}{{\`a}}1 {ê}{{\^e}}1 {É}{{\'E}}1 {ô}{{\^o}}1 {€}{{\euro}}1{°}{{$^{\circ}$}}1 {ç}{ {c}}1 {ù}{u}1
+	, extendedchars=\true
+   , tabsize=2 
+   , stepnumber=2
+   , frame=l
+   , framerule=1.1pt
+   , linewidth=510px
+   , breaklines=true 
+   , basicstyle=\footnotesize\ttfamily 
+   , numberstyle=\tiny\ttfamily 
+   , framexleftmargin=0mm 
+   , xleftmargin=0mm 
+   , captionpos=b 
+	, keywordstyle=\color{bleu2}
+	, commentstyle=\color{vert}
+	, stringstyle=\color{rouge}
+	, showstringspaces=false
+	, extendedchars=true
+	, mathescape=true
+	, prebreak=\raisebox{0ex}[0ex][0ex]
+		   {\ensuremath{\hookleftarrow}}
+	,breakatwhitespace=true
+} 
+%	\lstlistoflistings
+%	\addcontentsline{toc}{part}{List of code examples}
+
+
+\title{IHM \\ TD}
+\date{}
+\begin{document}
+\maketitle
+\part*{Intro - rappel}
+Liste pour construire l'IHM
+\begin{enumerate}
+    \item liste des événements
+    \item listes des actions $\Rightarrow$ actions qui provient de l'application
+    \item automate
+    \item Matrice /état/événements
+    \item pseudo-code
+\end{enumerate}
+
+\part*{TD1}
+
+\section*{Question 1}
+application des 4 boutons: voir cours. \\
+
+\begin{enumerate}
+    \item liste des event: Bouton1, Bouton2, Bouton3, Bouton4
+    \item liste des actions: (Activation/Desactivation des boutons ne fait pas partie des actions). Il n'y en a donc pas.
+    \item automate: automate1.dia
+    \item Matrice état/événements
+\end{enumerate}
+
+\begin{tabular}{c|c|c|c|c}
+\hline
+Etat-event & Btn1 & Btn2 & Btn3 & Btn4 \\
+\hline
+Init & S = E2 & interdit & interdit & interdit\\
+\hline
+E2 & interdit & S=E3 => activateE3() & interdit &interdit\\
+\hline
+E3 & interdit & interdit & S=E4 => activateE4() & interdit\\
+\hline
+E4 & interdit & interdit & interdit & S=INIT=>activiateInit()\\ \end{tabular}
+
+pseudo-code:
+\begin{lstlisting}[language=C]
+EventHandlerCb1
+switch(s)
+{
+    case INIT:
+        S = Etat2;
+        activateEtat2();
+        break;
+    case Etat2:
+        //interdit
+    case Etat3:
+        //interdit
+    case Etat4:
+        //interdit
+}
+\end{lstlisting}
+
+\section*{Question 2}
+
+\subsection*{Liste des event}
+clique bouton1, bouton2, bouton3, bouton4.
+
+\subsection*{Liste des actions}
+Aucunes actions.
+
+\subsection*{Automate}
+
+\begin{tabular}{c|c|c|c|c}
+\hline
+Etat-event & btn1 & btn2 & btn3 & btn4\\
+\hline
+Init & S=E2 & S=E3 & interdit & interdit\\
+\hline
+E2 & S=E2 & S=E4 & interdit & interdit \\
+\hline
+E3 & S=E4 & S=E3 & interdit & interdit \\
+\hline
+E4 & interdit & interdit & S=E5 & S=E6\\
+\hline
+E5 & interdit & interdit & S=E5 & S=Init\\
+\hline
+E6 & interdit & interdit & S=Init & S=E6 \\
+\end{tabular}
+
+\begin{lstlisting}[language=C]
+
+EventHandlerCb3()
+{
+    switch(s)
+    {
+        case INIT:
+            //interdit
+        break;
+        case E2:
+            //interdit
+        break;
+        case E3:
+            //interdit
+        break;
+        case E4:
+            S=E6;
+            activateE6();
+        break;
+        case E5:
+            S=INIT;
+            activateINIT();
+        break;
+        case E6:
+            S=E6;
+            activateE6();
+        break;
+    }
+}
+
+activateE6 ()
+{
+    JButton1.setEnable(False);
+    JButton2.setEnable(False);
+    JButton3.setEnable(True);
+    JButton4.setEnable(True);
+}
+\end{lstlisting}
+
+\section*{Question bonus (par le prof)}
+
+* liste des event : stop, start, tic\\
+* liste des actions :
+\begin{enumerate}
+    \item afficheSoleil()
+    \item afficheNuage()
+    \item affichePluie()
+    \item afficheEclair()
+    \item affichePouf()
+    \item afficheVide()
+\end{enumerate}
+*automate : automate3.dia
+
+\begin{tabular}{c|c|c|c}
+\hline
+Etat-Event & stop & start & tic \\
+\hline
+Init & interdit & S=E1 & interdit \\
+\hline
+E1 & S=E5 & interdit & S=E2 \\
+\hline
+E2 & S=E5 & interdit & S=E3 \\
+\hline
+E3 & S=E5 & interdit & S=E4 \\
+\hline
+E4 & S=E5 & interdit & S=Init \\
+\hline
+E5 & interdit & S=E1 & interdit
+
+\end{tabular}
+
+
+\end{document}
